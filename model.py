@@ -2,11 +2,9 @@ import math
 
 import mlx.core as mx
 import mlx.nn as nn
-from mlx.utils import tree_unflatten, tree_flatten, tree_map_with_path
+from mlx.utils import tree_flatten, tree_map_with_path
 
 from dataclasses import dataclass
-
-import pdb
 
 class LayerNorm(nn.Module):
     def __init__(self, ndim: int, bias: bool = False):

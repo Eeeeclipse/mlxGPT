@@ -3,7 +3,7 @@ import json
 import mlx.core as mx
 import numpy as np
 import os
-out_dir = 'out-shakespeare-char'
+out_dir = 'out-shakespeare'
 
 model_in = os.path.join(out_dir, 'ckpt.pt')
 model_weights_npz = os.path.join(out_dir,'weights.npz')

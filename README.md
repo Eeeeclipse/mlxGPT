@@ -2,7 +2,7 @@
 
 This repo is developed based on [nanoGPT_mlx](https://github.com/vithursant/nanoGPT_mlx) but will be more like the original version of [nanoGPT](https://github.com/karpathy/nanoGPT).
 
-It is mainly designed for inferencing models trained by [nanoGPT](https://github.com/karpathy/nanoGPT). I will provide code to convert the .pt model to mlx model.
+It is mainly designed for inferencing models trained by [nanoGPT](https://github.com/karpathy/nanoGPT). You can get the pytorch model from [here](https://huggingface.co/Zcyandrew/nanoGPT_shakespeare) and use pt2mlxnpz to convert the .pt model to mlx model to inference.
 
 It is also the start of my CS498MLS's project UMA. 
 <!-- 
