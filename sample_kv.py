@@ -6,8 +6,7 @@ import json
 import pickle
 import mlx.core as mx
 from mlx.utils import tree_unflatten
-
-from model import GPT, GPTConfig
+from model_kv import GPT, GPTConfig
 
 init_from = 'resume' # either 'resume' (from an out_dir) or a gpt2 variant (e.g. 'gpt2-xl')
 out_dir = 'nanoGPT_shakespeare' # ignored if init_from is not 'resume'
@@ -62,7 +61,7 @@ if start.startswith('FILE:'):
         start = f.read()
 start_ids = encode(start)
 x = (mx.array([start_ids], dtype=mx.uint32))
-
+x = mx.concatenate([x,x], axis=0)
 # run generation
 start = time.time()
 for k in range(num_samples):
