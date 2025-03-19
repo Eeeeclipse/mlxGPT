@@ -35,7 +35,7 @@ weights = mx.load(model_weights_path)
 
 model.update(tree_unflatten(list(weights.items())))
 mx.eval(model.parameters())
-
+model.eval()
 # look for the meta pickle in case it is available in the dataset folder
 load_meta = False
 if init_from == 'resume': # older checkpoints might not have these...

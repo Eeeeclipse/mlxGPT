@@ -4,7 +4,7 @@ import mlx.core as mx
 import numpy as np
 import os
 out_dir = 'nanoGPT_shakespeare'
-
+weight_dtype = mx.float32 # or mx.float16
 model_in = os.path.join(out_dir, 'ckpt.pt')
 model_weights_npz = os.path.join(out_dir,'weights.npz')
 model_args_json = os.path.join(out_dir, 'model_args.json')
@@ -24,6 +24,6 @@ unwanted_prefix = '_orig_mod.'
 for k,v in list(state_dict.items()):
     if k.startswith(unwanted_prefix):
         state_dict[k[len(unwanted_prefix):]] = state_dict.pop(k)
-np_state_dict = {key: mx.array(value.cpu().numpy(), dtype=mx.float32) for key, value in state_dict.items()}
+np_state_dict = {key: mx.array(value.cpu().numpy(), dtype=weight_dtype) for key, value in state_dict.items()}
 np.savez(model_weights_npz, **np_state_dict)
 

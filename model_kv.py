@@ -180,13 +180,9 @@ class GPT(nn.Module):
         b, t = idx.shape
         assert t <= self.config.block_size, f"Cannot forward sequence of length {t}, block size is only {self.config.block_size}"
         pos = mx.arange(0, t, 1, dtype=idx.dtype)
-        
         tok_emb = self.transformer.wte(idx)
-        
         pos_emb = self.transformer.wpe(pos)
-        
         x = self.transformer.drop(tok_emb + pos_emb)
-        
         if not kvcache:
             kvcache = [None] * self.config.n_layer
         else:

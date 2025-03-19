@@ -136,7 +136,6 @@ class GPT(nn.Module):
         params = tree_flatten(self.parameters())
         n_params = 0
         for pn, p in params:
-            
             if not pn.endswith("mask"):
                 if non_embedding and pn == 'transformer.wpe.weight':
                     pass
