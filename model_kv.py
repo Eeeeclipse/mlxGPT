@@ -41,22 +41,16 @@ class CausalSelfAttention(nn.Module):
             prev_k, prev_v = kvcache
             key = mx.concatenate([prev_k, key], axis=2)
             value = mx.concatenate([prev_v, value], axis=2)
-
         new_kvcache = [key, value]
         curr_T = key.shape[2]
+        att = mx.multiply(mx.matmul(query, key.transpose(0, 1, 3, 2)), mx.divide(1.0, math.sqrt(key.shape[3])))
         if kvcache:
-            
-            att = (query @ key.transpose(0, 1, 3, 2)) * (1.0 / math.sqrt(key.shape[3]))
             att = mx.where(mx.ones_like(self.mask[:,:,:T,:curr_T]) == 0, float('-1e9'), att)
-            att = mx.softmax(att.astype(mx.float32), axis=-1).astype(x.dtype)
-            att = self.attn_dropout(att)
-            y = mx.matmul(att, value)
         else:
-            att = (query @ key.transpose(0, 1, 3, 2)) * (1.0 / math.sqrt(key.shape[3]))
             att = mx.where(self.mask[:,:,:T,:T] == 0, float('-1e9'), att)
-            att = mx.softmax(att.astype(mx.float32), axis=-1).astype(x.dtype)
-            att = self.attn_dropout(att)
-            y = mx.matmul(att, value)
+        att = mx.softmax(att.astype(mx.float32), axis=-1).astype(x.dtype)
+        att = self.attn_dropout(att)
+        y = mx.matmul(att, value)
         y = y.transpose(0, 2, 1, 3).reshape(B, T, C) # re-assemble all head outputs side by side
         y = self.resid_dropout(self.c_proj(y))
         return y, new_kvcache
@@ -107,7 +101,6 @@ class GPTConfig:
     bias: bool = True # True: bias in Linears and LayerNorms, like GPT-2. False: a bit better and faster
 
 class transformer(nn.Module):
-
     def __init__(self, config):
         super().__init__()
         self.wte = nn.Embedding(config.vocab_size, config.n_embd)
@@ -122,18 +115,8 @@ class GPT(nn.Module):
         assert config.vocab_size is not None
         assert config.block_size is not None
         self.config = config
-
         self.transformer = transformer(config)
-        
         self.update(tree_map_with_path(self._init_weights, self.parameters()))
-
-        ########## The following code is included in _init_weights() ##########
-        #
-        # for pn, p in self.named_parameters():
-        #     if pn.endswith('c_proj.weight'):
-        #         torch.nn.init.normal_(p, mean=0.0, std=0.02/math.sqrt(2 * config.n_layer))
-        #
-        #######################################################################
         self.lm_head = nn.Linear(config.n_embd, config.vocab_size, bias=False)
         print("number of parameters: %.2fM" % (self.get_num_params()/1e6,))
 

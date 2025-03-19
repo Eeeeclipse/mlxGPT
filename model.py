@@ -41,12 +41,12 @@ class CausalSelfAttention(nn.Module):
         
         # kv cache is ignored here
 
-        att = (query @ key.transpose(0, 1, 3, 2)) * (1.0 / math.sqrt(key.shape[3]))
+        att = mx.multiply(mx.matmul(query, key.transpose(0, 1, 3, 2)), mx.divide(1.0, math.sqrt(key.shape[3])))
         att = mx.where(self.mask[:,:,:T,:T] == 0, float('-1e9'), att)
         att = mx.softmax(att.astype(mx.float32), axis=-1).astype(att.dtype)
         att = self.attn_dropout(att)
          
-        y = att @ value
+        y = mx.matmul(att, value)
         y = y.transpose(0, 2, 1, 3).reshape(B, T, C) # re-assemble all head outputs side by side
         y = self.resid_dropout(self.c_proj(y))
         return y
